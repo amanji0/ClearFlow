@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Zap, Waves, PackageOpen, Check, X, Search, AlertTriangle, Users, Package, DollarSign, BarChart2, ClipboardList, ArrowUpDown, Menu, Sparkles, Warehouse, Award, FileText, CheckCircle2, XCircle, LayoutDashboard, LogOut, TrendingDown } from 'lucide-react';
+import { Zap, Waves, PackageOpen, Check, X, Search, AlertTriangle, Users, Package, DollarSign, BarChart2, ClipboardList, ArrowUpDown, Menu, Sparkles, Warehouse, Award, FileText, CheckCircle2, XCircle, LayoutDashboard, LogOut, TrendingDown, Eye, EyeOff } from 'lucide-react';
 
 
 // ─── DESIGN TOKENS (Huggingface-inspired Light Theme) ─────────────────────────
@@ -160,6 +160,9 @@ function Btn({ children, onClick, variant = "primary", size = "md", disabled = f
 }
 
 function Input({ label, value, onChange, type = "text", placeholder = "", required = false, options, style = {} }) {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPassword = type === "password";
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 6, ...style }}>
       {label && (
@@ -186,6 +189,37 @@ function Input({ label, value, onChange, type = "text", placeholder = "", requir
           rows={3}
           style={{ resize: "vertical" }}
         />
+      ) : isPassword ? (
+        <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+          <input
+            className="input-field"
+            type={showPassword ? "text" : "password"}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            style={{ paddingRight: 40 }}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            style={{
+              position: "absolute",
+              right: 12,
+              background: "none",
+              border: "none",
+              color: C.textDim,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 4,
+              borderRadius: 4
+            }}
+            title={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
       ) : (
         <input
           className="input-field"
