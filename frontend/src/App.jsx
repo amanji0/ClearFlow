@@ -348,7 +348,7 @@ function LoginPage({ onLogin, users, setUsers }) {
       if (user && user.password === password) {
         setTimeout(() => onLogin({ username, ...user }), 600);
       } else {
-        setError("Invalid credentials (Offline mode)");
+        setError("Invalid username or password");
         setTimeout(() => setError(""), 4000);
         setIsLoading(false);
       }
