@@ -473,7 +473,7 @@ function LoginPage({ onLogin, users, setUsers }) {
               </div>
 
               <div className="quick-login-grid">
-                {Object.entries(users).filter(([u]) => ["admin", "sales", "warehouse", "accounts"].includes(u)).map(([u, d], i) => (
+                {Object.entries(users || {}).filter(([u]) => ["admin", "sales", "warehouse", "accounts"].includes(u)).map(([u, d], i) => (
                   <button
                     key={u}
                     className="quick-login-btn animate-fade-in-up"
@@ -481,11 +481,11 @@ function LoginPage({ onLogin, users, setUsers }) {
                     onClick={() => quickLogin(u)}
                   >
                     <div className="quick-login-avatar" style={{ background: C.accentYellowSoft, color: C.accent }}>
-                      {d.name[0]}
+                      {d?.name ? d.name[0] : u[0]?.toUpperCase()}
                     </div>
                     <div>
-                      <div className="quick-login-name">{d.name}</div>
-                      <div className="quick-login-role">{d.role}</div>
+                      <div className="quick-login-name">{d?.name || u}</div>
+                      <div className="quick-login-role">{d?.role || "User"}</div>
                     </div>
                   </button>
                 ))}
