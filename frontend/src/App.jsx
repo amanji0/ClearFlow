@@ -327,27 +327,51 @@ function LoginPage({ onLogin, users, setUsers }) {
   
   const handleLogin = async () => {
     setIsLoading(true);
+    setError("");
+
+    const cleanUsername = (username || "").trim().toLowerCase();
+    const cleanPassword = (password || "").trim();
+
+    if (!cleanUsername || !cleanPassword) {
+      setError("Please enter both username and password.");
+      setTimeout(() => setError(""), 4000);
+      setIsLoading(false);
+      return;
+    }
+
+    const localUsers = { ...MOCK_USERS, ...(users || {}) };
+    const localUser = localUsers[cleanUsername];
+
+    const checkLocalLogin = () => {
+      if (localUser && localUser.password === cleanPassword) {
+        setTimeout(() => onLogin({ username: cleanUsername, ...localUser }), 300);
+        return true;
+      }
+      return false;
+    };
+
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
       const res = await fetch(API_URL + '/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username: cleanUsername, password: cleanPassword })
       });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || 'Invalid credentials');
-        setTimeout(() => setError(""), 4000);
-        setIsLoading(false);
-      } else {
-        setTimeout(() => onLogin(data), 600);
+
+      if (res.ok) {
+        const data = await res.json();
+        setTimeout(() => onLogin(data), 300);
+        return;
       }
+
+      if (checkLocalLogin()) return;
+
+      const data = await res.json().catch(() => ({}));
+      setError(data.error || "Invalid username or password");
+      setTimeout(() => setError(""), 4000);
+      setIsLoading(false);
     } catch (err) {
-      // Fallback to local check if API is down
-      const user = users[username.toLowerCase()];
-      if (user && user.password === password) {
-        setTimeout(() => onLogin({ username, ...user }), 600);
-      } else {
+      if (!checkLocalLogin()) {
         setError("Invalid username or password");
         setTimeout(() => setError(""), 4000);
         setIsLoading(false);
@@ -355,43 +379,62 @@ function LoginPage({ onLogin, users, setUsers }) {
     }
   };
 
-
   const handleSignup = () => {
-    if (!signupForm.name || !signupForm.username || !signupForm.password) {
+    setError("");
+    const name = (signupForm.name || "").trim();
+    const cleanUsername = (signupForm.username || "").trim().toLowerCase();
+    const password = signupForm.password || "";
+    const confirmPassword = signupForm.confirmPassword || "";
+    const role = signupForm.role || "Sales";
+
+    if (!name || !cleanUsername || !password) {
       setError("Please fill all required fields.");
       setTimeout(() => setError(""), 4000);
       return;
     }
-    if (signupForm.password !== signupForm.confirmPassword) {
+    if (password !== confirmPassword) {
       setError("Passwords do not match.");
       setTimeout(() => setError(""), 4000);
       return;
     }
-    if (signupForm.password.length < 6) {
+    if (password.length < 6) {
       setError("Password must be at least 6 characters.");
       setTimeout(() => setError(""), 4000);
       return;
     }
-    if (users[signupForm.username.toLowerCase()]) {
+
+    const localUsers = { ...MOCK_USERS, ...(users || {}) };
+    if (localUsers[cleanUsername]) {
       setError("Username already exists.");
       setTimeout(() => setError(""), 4000);
       return;
     }
-    // Register user
+
+    const newUser = { name, username: cleanUsername, password, role };
+
     setUsers((prev) => ({
       ...prev,
-      [signupForm.username.toLowerCase()]: {
-        password: signupForm.password,
-        role: signupForm.role,
-        name: signupForm.name,
-      }
+      [cleanUsername]: newUser
     }));
-    setSignupSuccess(`Account created! You can now sign in as "${signupForm.username}".`);
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      fetch(API_URL + '/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newUser)
+      }).catch(() => {});
+    } catch {}
+
+    setSignupSuccess(`Account created! Auto-redirecting to Sign In...`);
     setSignupForm({ name: "", username: "", password: "", confirmPassword: "", role: "Sales" });
+    setUsername(cleanUsername);
+    setPassword(password);
+
     setTimeout(() => {
       setSignupSuccess("");
       setActiveTab("login");
-    }, 3000);
+    }, 1500);
   };
 
   const quickLogin = (u) => {
