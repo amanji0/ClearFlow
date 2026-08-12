@@ -761,7 +761,7 @@ function Customers({ customers, setCustomers, user }) {
             </div>
           </div>
           <div className="modal-actions">
-            {modal === "edit" && <Btn variant="danger" onClick={() => deleteCustomer(form.id)}>Delete</Btn>}
+            {modal === "edit" && user.role === "Admin" && <Btn variant="danger" onClick={() => deleteCustomer(form.id)}>Delete</Btn>}
             <div style={{ flex: 1 }} />
             <Btn variant="ghost" onClick={() => setModal(null)}>Cancel</Btn>
             <Btn onClick={saveCustomer}>{modal === "add" ? "Add Customer" : "Save Changes"}</Btn>
@@ -985,7 +985,7 @@ function Products({ products, setProducts, stockLog, setStockLog, user }) {
             </div>
           </div>
           <div className="modal-actions">
-            {modal === "edit" && <Btn variant="danger" onClick={() => deleteProduct(form.id)}>Delete</Btn>}
+            {modal === "edit" && user.role === "Admin" && <Btn variant="danger" onClick={() => deleteProduct(form.id)}>Delete</Btn>}
             <div style={{ flex: 1 }} />
             <Btn variant="ghost" onClick={() => setModal(null)}>Cancel</Btn>
             <Btn onClick={saveProduct}>{modal === "add" ? "Add Product" : "Save Changes"}</Btn>
@@ -1512,7 +1512,7 @@ const NAV_ITEMS = [
   { id: "dashboard", label: "Dashboard", icon: "⊞", roles: ["Admin", "Sales", "Warehouse", "Accounts"] },
   { id: "customers", label: "Customers", icon: <Users size={18} />, roles: ["Admin", "Sales", "Accounts"] },
   { id: "products", label: "Products", icon: <Package size={18} />, roles: ["Admin", "Sales", "Warehouse", "Accounts"] },
-  { id: "challans", label: "Challans", icon: <ClipboardList size={18} />, roles: ["Admin", "Sales", "Accounts"] },
+  { id: "challans", label: "Challans", icon: <ClipboardList size={18} />, roles: ["Admin", "Sales", "Warehouse", "Accounts"] },
   { id: "reports", label: "Reports", icon: <BarChart2 size={18} />, roles: ["Admin", "Accounts"] },
 ];
 
