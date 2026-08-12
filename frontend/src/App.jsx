@@ -1587,17 +1587,56 @@ export default function App() {
   const [pageKey, setPageKey] = useState(0);
 
   // Load persisted data or use defaults
-  const saved = loadData();
-  const [customers, setCustomers] = useState(saved?.customers || DEFAULT_CUSTOMERS);
-  const [products, setProducts] = useState(saved?.products || DEFAULT_PRODUCTS);
-  const [stockLog, setStockLog] = useState(saved?.stockLog || DEFAULT_STOCK_LOG);
-  const [challans, setChallans] = useState(saved?.challans || DEFAULT_CHALLANS);
-  const [users, setUsers] = useState(saved?.users || MOCK_USERS);
+  
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  
+  const [customers, setCustomers] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [stockLog, setStockLog] = useState([]);
+  const [challans, setChallans] = useState([]);
+  const [users, setUsers] = useState({});
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  // Persist data whenever it changes
   useEffect(() => {
-    saveData({ customers, products, stockLog, challans, users });
-  }, [customers, products, stockLog, challans, users]);
+    Promise.all([
+      fetch(API_URL + '/customers').then(r => r.json()),
+      fetch(API_URL + '/products').then(r => r.json()),
+      fetch(API_URL + '/challans').then(r => r.json()),
+      fetch(API_URL + '/stocklogs').then(r => r.json()),
+      fetch(API_URL + '/users').then(r => r.json())
+    ]).then(([c, p, ch, sl, u]) => {
+      setCustomers(c.length ? c : DEFAULT_CUSTOMERS);
+      setProducts(p.length ? p : DEFAULT_PRODUCTS);
+      setChallans(ch.length ? ch : DEFAULT_CHALLANS);
+      setStockLog(sl.length ? sl : DEFAULT_STOCK_LOG);
+      
+      const usersMap = {};
+      if (u && u.length) {
+        u.forEach(user => usersMap[user.username.toLowerCase()] = user);
+      } else {
+        Object.assign(usersMap, MOCK_USERS);
+      }
+      setUsers(usersMap);
+      setIsLoaded(true);
+    }).catch(err => {
+      console.error("API Error, falling back to local storage", err);
+      const saved = loadData();
+      setCustomers(saved?.customers || DEFAULT_CUSTOMERS);
+      setProducts(saved?.products || DEFAULT_PRODUCTS);
+      setStockLog(saved?.stockLog || DEFAULT_STOCK_LOG);
+      setChallans(saved?.challans || DEFAULT_CHALLANS);
+      setUsers(saved?.users || MOCK_USERS);
+      setIsLoaded(true);
+    });
+  }, []);
+
+  // Persist locally as backup
+  useEffect(() => {
+    if (isLoaded) saveData({ customers, products, stockLog, challans, users });
+  }, [customers, products, stockLog, challans, users, isLoaded]);
+
+  if (!isLoaded) return <div style={{display:'flex', height:'100vh', alignItems:'center', justifyContent:'center'}}>Loading...</div>;
+
 
   // Responsive sidebar
   useEffect(() => {
