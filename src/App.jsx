@@ -1618,6 +1618,15 @@ export default function App() {
   const [users, setUsers] = useState({});
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // Responsive sidebar
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) setSidebarCollapsed(true);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     Promise.all([
       fetch(API_URL + '/customers').then(r => r.json()),
@@ -1658,15 +1667,6 @@ export default function App() {
 
   if (!isLoaded) return <div style={{display:'flex', height:'100vh', alignItems:'center', justifyContent:'center'}}>Loading...</div>;
 
-
-  // Responsive sidebar
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) setSidebarCollapsed(true);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   // Animate page transitions
   const handlePageChange = (page) => {
