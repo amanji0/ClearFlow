@@ -477,7 +477,7 @@ function LoginPage({ onLogin, users, setUsers }) {
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 <Input label="Full Name" value={signupForm.name} onChange={(v) => setSignupForm((f) => ({ ...f, name: v }))} placeholder="Enter your full name" required />
                 <Input label="Username" value={signupForm.username} onChange={(v) => setSignupForm((f) => ({ ...f, username: v }))} placeholder="Choose a username" required />
-                <Input label="Role" value={signupForm.role} onChange={(v) => setSignupForm((f) => ({ ...f, role: v }))} options={["Sales", "Warehouse", "Accounts"]} />
+                <Input label="Role" value={signupForm.role} onChange={(v) => setSignupForm((f) => ({ ...f, role: v }))} options={["Admin", "Sales", "Warehouse", "Accounts"]} />
                 <Input label="Password" value={signupForm.password} onChange={(v) => setSignupForm((f) => ({ ...f, password: v }))} type="password" placeholder="Min 6 characters" required />
                 <Input label="Confirm Password" value={signupForm.confirmPassword} onChange={(v) => setSignupForm((f) => ({ ...f, confirmPassword: v }))} type="password" placeholder="Re-enter password" required />
                 <Btn
