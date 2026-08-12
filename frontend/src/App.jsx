@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Zap, Waves, PackageOpen, Check, X, Search, AlertTriangle, Users, Package, DollarSign, BarChart2, ClipboardList, ArrowUpDown, Menu } from 'lucide-react';
+import { Zap, Waves, PackageOpen, Check, X, Search, AlertTriangle, Users, Package, DollarSign, BarChart2, ClipboardList, ArrowUpDown, Menu, Sparkles, Warehouse, Award, FileText, CheckCircle2, XCircle, LayoutDashboard, LogOut, TrendingDown } from 'lucide-react';
 
 
 // ─── DESIGN TOKENS (Huggingface-inspired Light Theme) ─────────────────────────
@@ -520,7 +520,7 @@ function Dashboard({ customers, products, challans, stockLog, user }) {
     <div className="page-content">
       <div className="page-header animate-fade-in-down">
         <div>
-          <h1 className="page-title">{getGreeting()}, {user.name.split(" ")[0]} 👋</h1>
+          <h1 className="page-title">{getGreeting()}, {user.name.split(" ")[0]} <Sparkles size={24} color="#FF9D00" style={{ display: "inline", verticalAlign: "middle", marginLeft: 4 }} /></h1>
           <p className="page-subtitle">
             {new Date().toLocaleDateString("en-IN", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
           </p>
@@ -529,9 +529,9 @@ function Dashboard({ customers, products, challans, stockLog, user }) {
 
       <div className="stat-grid">
         <StatCard label="Total Customers" value={customers.length} sub={`${activeCustomers} active`} color={C.accent} icon={<Users size={28} opacity={0.7} />} delay={0} />
-        <StatCard label="Products" value={products.length} sub={lowStock > 0 ? `⚠ ${lowStock} low stock` : "✓ All stocked"} color={lowStock > 0 ? C.warning : C.success} icon={<Package size={28} opacity={0.7} />} delay={0.08} />
+        <StatCard label="Products" value={products.length} sub={lowStock > 0 ? `${lowStock} low stock items` : "All stocked"} color={lowStock > 0 ? C.warning : C.success} icon={<Package size={28} opacity={0.7} />} delay={0.08} />
         <StatCard label="Revenue" value={fmtCurrency(animatedRevenue)} sub={`${confirmedChallans.length} confirmed challans`} color={C.success} icon={<DollarSign size={28} opacity={0.7} />} delay={0.16} />
-        <StatCard label="Inventory Value" value={fmtCurrency(animatedInventory)} sub={`${products.length} product lines`} color={C.purple} icon="🏭" delay={0.24} />
+        <StatCard label="Inventory Value" value={fmtCurrency(animatedInventory)} sub={`${products.length} product lines`} color={C.purple} icon={<Warehouse size={28} opacity={0.7} />} delay={0.24} />
       </div>
 
       {/* Alerts */}
@@ -561,7 +561,7 @@ function Dashboard({ customers, products, challans, stockLog, user }) {
       {/* Low Stock Products */}
       <div className="glass-card animate-fade-in-up" style={{ animationDelay: "0.35s" }}>
         <h2 className="card-title">
-          <span>📉</span> Low Stock Products
+          <TrendingDown size={20} color={C.danger} style={{ display: "inline", verticalAlign: "middle", marginRight: 8 }} /> Low Stock Products
         </h2>
         {products.filter((p) => p.stock <= p.minStock).length === 0 ? (
           <p style={{ color: C.textSec, fontSize: 14 }}><Check size={14} style={{display:"inline", marginBottom:-2}} /> All products are adequately stocked.</p>
@@ -1437,7 +1437,7 @@ function Reports({ customers, products, challans, stockLog }) {
         </div>
 
         <div className="glass-card animate-fade-in-up" style={{ animationDelay: "0.35s" }}>
-          <h2 className="card-title"><span>🏆</span> Top Selling Products</h2>
+          <h2 className="card-title"><Award size={20} color={C.accent} style={{ display: "inline", verticalAlign: "middle", marginRight: 8 }} /> Top Selling Products</h2>
           {topProducts.length === 0 ? (
             <p style={{ color: C.textSec, fontSize: 14 }}>No sales data yet.</p>
           ) : (
@@ -1461,10 +1461,14 @@ function Reports({ customers, products, challans, stockLog }) {
           {["Draft", "Confirmed", "Cancelled"].map((s) => {
             const count = challans.filter((c) => c.status === s).length;
             const colors = { Draft: C.cyan, Confirmed: C.success, Cancelled: C.danger };
-            const icons = { Draft: "📝", Confirmed: "✅", Cancelled: "❌" };
+            const statusIcons = {
+              Draft: <FileText size={24} color={C.cyan} />,
+              Confirmed: <CheckCircle2 size={24} color={C.success} />,
+              Cancelled: <XCircle size={24} color={C.danger} />
+            };
             return (
               <div key={s} className="challan-status-card">
-                <div className="challan-status-icon">{icons[s]}</div>
+                <div className="challan-status-icon" style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}>{statusIcons[s]}</div>
                 <div className="challan-status-count" style={{ color: colors[s] }}>{count}</div>
                 <div className="challan-status-label">{s}</div>
               </div>
@@ -1475,7 +1479,7 @@ function Reports({ customers, products, challans, stockLog }) {
 
       {/* Inventory Valuation */}
       <div className="glass-card animate-fade-in-up" style={{ animationDelay: "0.45s" }}>
-        <h2 className="card-title"><span>🏭</span> Inventory Valuation</h2>
+        <h2 className="card-title"><Warehouse size={20} color={C.purple} style={{ display: "inline", verticalAlign: "middle", marginRight: 8 }} /> Inventory Valuation</h2>
         <DataTable
           cols={[
             { key: "name", label: "Product" },
@@ -1509,7 +1513,7 @@ function Reports({ customers, products, challans, stockLog }) {
 
 // ─── SIDEBAR NAV ─────────────────────────────────────────────────────────────
 const NAV_ITEMS = [
-  { id: "dashboard", label: "Dashboard", icon: "⊞", roles: ["Admin", "Sales", "Warehouse", "Accounts"] },
+  { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} />, roles: ["Admin", "Sales", "Warehouse", "Accounts"] },
   { id: "customers", label: "Customers", icon: <Users size={18} />, roles: ["Admin", "Sales", "Accounts"] },
   { id: "products", label: "Products", icon: <Package size={18} />, roles: ["Admin", "Sales", "Warehouse", "Accounts"] },
   { id: "challans", label: "Challans", icon: <ClipboardList size={18} />, roles: ["Admin", "Sales", "Warehouse", "Accounts"] },
@@ -1569,7 +1573,7 @@ function Sidebar({ active, setActive, user, onLogout, collapsed, setCollapsed })
         {/* Logout */}
         <div className="sidebar-footer">
           <button className="sidebar-nav-item logout-btn" onClick={onLogout}>
-            <span className="sidebar-nav-icon">⎋</span>
+            <span className="sidebar-nav-icon"><LogOut size={18} /></span>
             <span className="sidebar-nav-label">Sign Out</span>
           </button>
         </div>
