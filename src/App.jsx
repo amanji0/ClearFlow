@@ -313,7 +313,7 @@ function SearchInput({ value, onChange, placeholder }) {
 }
 
 // ─── LOGIN PAGE ───────────────────────────────────────────────────────────────
-function LoginPage({ onLogin }) {
+function LoginPage({ onLogin, users, setUsers }) {
   const [activeTab, setActiveTab] = useState("login");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -325,7 +325,7 @@ function LoginPage({ onLogin }) {
   const [signupSuccess, setSignupSuccess] = useState("");
 
   const handleLogin = () => {
-    const user = MOCK_USERS[username.toLowerCase()];
+    const user = users[username.toLowerCase()];
     if (user && user.password === password) {
       setIsLoading(true);
       setTimeout(() => onLogin({ username, ...user }), 600);
@@ -351,17 +351,20 @@ function LoginPage({ onLogin }) {
       setTimeout(() => setError(""), 4000);
       return;
     }
-    if (MOCK_USERS[signupForm.username.toLowerCase()]) {
+    if (users[signupForm.username.toLowerCase()]) {
       setError("Username already exists.");
       setTimeout(() => setError(""), 4000);
       return;
     }
     // Register user
-    MOCK_USERS[signupForm.username.toLowerCase()] = {
-      password: signupForm.password,
-      role: signupForm.role,
-      name: signupForm.name,
-    };
+    setUsers((prev) => ({
+      ...prev,
+      [signupForm.username.toLowerCase()]: {
+        password: signupForm.password,
+        role: signupForm.role,
+        name: signupForm.name,
+      }
+    }));
     setSignupSuccess(`Account created! You can now sign in as "${signupForm.username}".`);
     setSignupForm({ name: "", username: "", password: "", confirmPassword: "", role: "Sales" });
     setTimeout(() => {
@@ -372,7 +375,7 @@ function LoginPage({ onLogin }) {
 
   const quickLogin = (u) => {
     setIsLoading(true);
-    const user = MOCK_USERS[u];
+    const user = users[u];
     setTimeout(() => onLogin({ username: u, ...user }), 500);
   };
 
@@ -449,7 +452,7 @@ function LoginPage({ onLogin }) {
               </div>
 
               <div className="quick-login-grid">
-                {Object.entries(MOCK_USERS).filter(([u]) => ["admin", "sales", "warehouse", "accounts"].includes(u)).map(([u, d], i) => (
+                {Object.entries(users).filter(([u]) => ["admin", "sales", "warehouse", "accounts"].includes(u)).map(([u, d], i) => (
                   <button
                     key={u}
                     className="quick-login-btn animate-fade-in-up"
@@ -1589,11 +1592,12 @@ export default function App() {
   const [products, setProducts] = useState(saved?.products || DEFAULT_PRODUCTS);
   const [stockLog, setStockLog] = useState(saved?.stockLog || DEFAULT_STOCK_LOG);
   const [challans, setChallans] = useState(saved?.challans || DEFAULT_CHALLANS);
+  const [users, setUsers] = useState(saved?.users || MOCK_USERS);
 
   // Persist data whenever it changes
   useEffect(() => {
-    saveData({ customers, products, stockLog, challans });
-  }, [customers, products, stockLog, challans]);
+    saveData({ customers, products, stockLog, challans, users });
+  }, [customers, products, stockLog, challans, users]);
 
   // Responsive sidebar
   useEffect(() => {
@@ -1611,7 +1615,7 @@ export default function App() {
   };
 
   if (!user) {
-    return <LoginPage onLogin={(u) => { setUser(u); setActive("dashboard"); setPageKey((k) => k + 1); }} />;
+    return <LoginPage onLogin={(u) => { setUser(u); setActive("dashboard"); setPageKey((k) => k + 1); }} users={users} setUsers={setUsers} />;
   }
 
   const pages = {
