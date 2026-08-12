@@ -376,14 +376,13 @@ function LoginPage({ onLogin, users, setUsers }) {
     const localUsers = { ...MOCK_USERS, ...(users || {}) };
     const localUser = localUsers[cleanUsername];
 
-    const checkLocalLogin = () => {
-      if (localUser && localUser.password === cleanPassword) {
-        setTimeout(() => onLogin({ username: cleanUsername, ...localUser }), 300);
-        return true;
-      }
-      return false;
-    };
+    // 1. Instant check against local/demo accounts & registered accounts
+    if (localUser && localUser.password === cleanPassword) {
+      setTimeout(() => onLogin({ username: cleanUsername, ...localUser }), 200);
+      return;
+    }
 
+    // 2. Fallback to API check if not found locally
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
       const res = await fetch(API_URL + '/auth/login', {
@@ -394,22 +393,18 @@ function LoginPage({ onLogin, users, setUsers }) {
 
       if (res.ok) {
         const data = await res.json();
-        setTimeout(() => onLogin(data), 300);
+        setTimeout(() => onLogin(data), 200);
         return;
       }
-
-      if (checkLocalLogin()) return;
 
       const data = await res.json().catch(() => ({}));
       setError(data.error || "Invalid username or password");
       setTimeout(() => setError(""), 4000);
       setIsLoading(false);
     } catch (err) {
-      if (!checkLocalLogin()) {
-        setError("Invalid username or password");
-        setTimeout(() => setError(""), 4000);
-        setIsLoading(false);
-      }
+      setError("Invalid username or password");
+      setTimeout(() => setError(""), 4000);
+      setIsLoading(false);
     }
   };
 
@@ -417,8 +412,8 @@ function LoginPage({ onLogin, users, setUsers }) {
     setError("");
     const name = (signupForm.name || "").trim();
     const cleanUsername = (signupForm.username || "").trim().toLowerCase();
-    const password = signupForm.password || "";
-    const confirmPassword = signupForm.confirmPassword || "";
+    const password = (signupForm.password || "").trim();
+    const confirmPassword = (signupForm.confirmPassword || "").trim();
     const role = signupForm.role || "Sales";
 
     if (!name || !cleanUsername || !password) {
@@ -446,11 +441,13 @@ function LoginPage({ onLogin, users, setUsers }) {
 
     const newUser = { name, username: cleanUsername, password, role };
 
+    // Register user in local state & localStorage immediately
     setUsers((prev) => ({
       ...prev,
       [cleanUsername]: newUser
     }));
 
+    // Async sync with API if available
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
       fetch(API_URL + '/users', {
@@ -460,15 +457,12 @@ function LoginPage({ onLogin, users, setUsers }) {
       }).catch(() => {});
     } catch {}
 
-    setSignupSuccess(`Account created! Auto-redirecting to Sign In...`);
-    setSignupForm({ name: "", username: "", password: "", confirmPassword: "", role: "Sales" });
-    setUsername(cleanUsername);
-    setPassword(password);
-
+    // INSTANT LOG IN AFTER SIGNUP!
+    setIsLoading(true);
+    setSignupSuccess(`Account created successfully! Logging you in...`);
     setTimeout(() => {
-      setSignupSuccess("");
-      setActiveTab("login");
-    }, 1500);
+      onLogin(newUser);
+    }, 600);
   };
 
   const quickLogin = (u) => {
