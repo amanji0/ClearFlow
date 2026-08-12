@@ -324,16 +324,37 @@ function LoginPage({ onLogin, users, setUsers }) {
   const [signupForm, setSignupForm] = useState({ name: "", username: "", password: "", confirmPassword: "", role: "Sales" });
   const [signupSuccess, setSignupSuccess] = useState("");
 
-  const handleLogin = () => {
-    const user = users[username.toLowerCase()];
-    if (user && user.password === password) {
-      setIsLoading(true);
-      setTimeout(() => onLogin({ username, ...user }), 600);
-    } else {
-      setError("Invalid credentials. Try: admin / admin123");
-      setTimeout(() => setError(""), 4000);
+  
+  const handleLogin = async () => {
+    setIsLoading(true);
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const res = await fetch(API_URL + '/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Invalid credentials');
+        setTimeout(() => setError(""), 4000);
+        setIsLoading(false);
+      } else {
+        setTimeout(() => onLogin(data), 600);
+      }
+    } catch (err) {
+      // Fallback to local check if API is down
+      const user = users[username.toLowerCase()];
+      if (user && user.password === password) {
+        setTimeout(() => onLogin({ username, ...user }), 600);
+      } else {
+        setError("Invalid credentials (Offline mode)");
+        setTimeout(() => setError(""), 4000);
+        setIsLoading(false);
+      }
     }
   };
+
 
   const handleSignup = () => {
     if (!signupForm.name || !signupForm.username || !signupForm.password) {
