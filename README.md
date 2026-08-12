@@ -65,6 +65,11 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
 4. **Open in browser:**
    Navigate to `http://localhost:3000` (or the port provided by Vite).
 
+## 🌐 Live URLs & Deployment
+
+- **Live Frontend App:** [https://clear-flow-omega.vercel.app](https://clear-flow-omega.vercel.app)
+- **GitHub Repository:** [https://github.com/amanji0/ClearFlow](https://github.com/amanji0/ClearFlow)
+
 ## 🔑 Demo Credentials
 
 You can use the Quick Access buttons on the login page, or sign in manually with these accounts:
@@ -75,6 +80,26 @@ You can use the Quick Access buttons on the login page, or sign in manually with
 | `sales` | `sales123` | Sales | Customers, Products, Challans |
 | `warehouse` | `wh123` | Warehouse | Products (Read-Only), Inventory Management |
 | `accounts` | `acc123` | Accounts | Reports, Read-Only CRM |
+
+## 🏗️ Architecture Summary
+
+ClearFlow is built using a modern 3-tier architecture:
+1. **Frontend:** React SPA built with Vite, styled with custom Huggingface-inspired light CSS design tokens, responsive layouts, and stroke SVG icons (`lucide-react`). Features dual-mode persistence (REST API sync with LocalStorage offline fallback).
+2. **Backend API:** Node.js & Express RESTful API (`backend/server.js`) with input validation via Zod middleware, structured HTTP error codes, pagination, and search filtering.
+3. **Database:** PostgreSQL managed via Prisma ORM for relational data storage (Users, Customers, Products, Challans, StockLogs).
+
+## 🔌 API Endpoints Reference
+
+- `POST /api/auth/login` — Authenticate user credentials
+- `GET /api/customers` — List customers (supports `?search=`, `?status=`, `?page=`, `?limit=`)
+- `POST /api/customers` — Create customer profile
+- `PUT /api/customers/:id` — Update customer details
+- `DELETE /api/customers/:id` — Delete customer profile
+- `GET /api/products` — List inventory products (supports `?search=`, `?category=`)
+- `POST /api/products` — Add new product SKU
+- `GET /api/challans` — List sales challans
+- `POST /api/challans` — Create sales order & deduct stock
+- `GET /api/stocklogs` — Audit log of inventory movements
 
 ## 🎨 Design Philosophy
 The UI was built to stand out from typical, overly-complex ERP systems. It utilizes a soft, airy color palette (accented with warm orange and yellow), smooth transitions, glassmorphic elements, and extensive micro-interactions to create an engaging user experience.
