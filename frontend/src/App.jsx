@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Zap, Waves, PackageOpen, Check, X, Search, AlertTriangle, Users, Package, DollarSign, BarChart2, ClipboardList, ArrowUpDown, Menu, Sparkles, Warehouse, Award, FileText, CheckCircle2, XCircle, LayoutDashboard, LogOut, TrendingDown, Eye, EyeOff } from 'lucide-react';
+import { Zap, Waves, PackageOpen, Check, X, Search, AlertTriangle, Users, Package, DollarSign, IndianRupee, BarChart2, ClipboardList, ArrowUpDown, Menu, Sparkles, Warehouse, Award, FileText, CheckCircle2, XCircle, LayoutDashboard, LogOut, TrendingDown, Eye, EyeOff } from 'lucide-react';
 
 
 // ─── DESIGN TOKENS (Huggingface-inspired Light Theme) ─────────────────────────
@@ -601,7 +601,7 @@ function Dashboard({ customers, products, challans, stockLog, user }) {
       <div className="stat-grid">
         <StatCard label="Total Customers" value={customers.length} sub={`${activeCustomers} active`} color={C.accent} icon={<Users size={28} opacity={0.7} />} delay={0} />
         <StatCard label="Products" value={products.length} sub={lowStock > 0 ? `${lowStock} low stock items` : "All stocked"} color={lowStock > 0 ? C.warning : C.success} icon={<Package size={28} opacity={0.7} />} delay={0.08} />
-        <StatCard label="Revenue" value={fmtCurrency(animatedRevenue)} sub={`${confirmedChallans.length} confirmed challans`} color={C.success} icon={<DollarSign size={28} opacity={0.7} />} delay={0.16} />
+        <StatCard label="Revenue" value={fmtCurrency(animatedRevenue)} sub={`${confirmedChallans.length} confirmed challans`} color={C.success} icon={<IndianRupee size={28} opacity={0.7} />} delay={0.16} />
         <StatCard label="Inventory Value" value={fmtCurrency(animatedInventory)} sub={`${products.length} product lines`} color={C.purple} icon={<Warehouse size={28} opacity={0.7} />} delay={0.24} />
       </div>
 
@@ -1457,7 +1457,7 @@ function Reports({ customers, products, challans, stockLog }) {
       </div>
 
       <div className="stat-grid">
-        <StatCard label="Total Revenue" value={fmtCurrency(animatedRevenue)} color={C.success} icon={<DollarSign size={28} opacity={0.7} />} delay={0} />
+        <StatCard label="Total Revenue" value={fmtCurrency(animatedRevenue)} color={C.success} icon={<IndianRupee size={28} opacity={0.7} />} delay={0} />
         <StatCard label="Active Customers" value={customers.filter((c) => c.status === "Active").length} color={C.accent} icon={<Users size={28} opacity={0.7} />} delay={0.08} />
         <StatCard label="Confirmed Challans" value={confirmedChallans.length} color={C.purple} icon={<Check size={28} opacity={0.7} />} delay={0.16} />
         <StatCard label="Low Stock Items" value={products.filter((p) => p.stock <= p.minStock).length} color={C.warning} icon={<AlertTriangle size={28} opacity={0.7} />} delay={0.24} />
