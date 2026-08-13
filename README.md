@@ -1,5 +1,8 @@
 # ClearFlow — Enterprise ERP & CRM Portal
 
+> 🔗 **Live Frontend Application:** [https://clear-flow-omega.vercel.app](https://clear-flow-omega.vercel.app)  
+> 📁 **GitHub Repository:** [https://github.com/amanji0/ClearFlow](https://github.com/amanji0/ClearFlow)
+
 ClearFlow is a modern, industry-grade Enterprise Resource Planning (ERP) and Customer Relationship Management (CRM) portal designed specifically for wholesale and distribution operations.
 
 It features a premium, Huggingface-inspired light theme with a functional minimalist design, custom micro-animations, and a responsive layout that works across devices.
